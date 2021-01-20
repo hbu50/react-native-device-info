@@ -57,7 +57,7 @@ const FunctionalComponent = () => {
 
   return (
     <ScrollView>
-      <Text style={styles.instructions}>
+      <Text style={styles.instructions} testID="hooks tab contents">
         {JSON.stringify(deviceJSON, null, '  ')}
       </Text>
     </ScrollView>
@@ -180,6 +180,8 @@ export default class App extends Component {
     deviceJSON.incremental = DeviceInfo.getIncrementalSync();
     deviceJSON.supported32BitAbis = DeviceInfo.supported32BitAbisSync();
     deviceJSON.supported64BitAbis = DeviceInfo.supported64BitAbisSync();
+    deviceJSON.hasGms = DeviceInfo.hasGmsSync();
+    deviceJSON.hasHms = DeviceInfo.hasHmsSync();
 
     return deviceJSON;
   }
@@ -245,6 +247,8 @@ export default class App extends Component {
       deviceJSON.incremental = await DeviceInfo.getIncremental();
       deviceJSON.supported32BitAbis = await DeviceInfo.supported32BitAbis();
       deviceJSON.supported64BitAbis = await DeviceInfo.supported64BitAbis();
+      deviceJSON.hasGms = await DeviceInfo.hasGms();
+      deviceJSON.hasHms = await DeviceInfo.hasHms();
       deviceJSON.synchronizedUniqueId = await DeviceInfo.syncUniqueId();
       try {
         deviceJSON.deviceToken = await DeviceInfo.getDeviceToken();
@@ -273,7 +277,7 @@ export default class App extends Component {
               react-native-device-info example - constant info:
             </Text>
             <ScrollView>
-              <Text style={styles.instructions}>
+              <Text style={styles.instructions} testID="constant tab contents">
                 {JSON.stringify(this.state.constantdeviceinfo, null, '  ')}
               </Text>
             </ScrollView>
@@ -284,7 +288,7 @@ export default class App extends Component {
               react-native-device-info example - sync info:
             </Text>
             <ScrollView>
-              <Text style={styles.instructions}>
+              <Text style={styles.instructions} testID="sync tab contents">
                 {JSON.stringify(this.state.syncdeviceinfo, null, '  ')}
               </Text>
             </ScrollView>
@@ -295,7 +299,7 @@ export default class App extends Component {
               react-native-device-info example - async info:
             </Text>
             <ScrollView>
-              <Text style={styles.instructions}>
+              <Text style={styles.instructions} testID="async tab contents">
                 {JSON.stringify(this.state.asyncdeviceinfo, null, '  ')}
               </Text>
             </ScrollView>
@@ -312,6 +316,7 @@ export default class App extends Component {
         <View style={styles.tabBar}>
           <TouchableOpacity
             style={styles.tab}
+            testID="constant button"
             onPress={() => this.setState({activeTab: 'constant'})}>
             <Text
               style={[
@@ -324,6 +329,7 @@ export default class App extends Component {
 
           <TouchableOpacity
             style={styles.tab}
+            testID="sync button"
             onPress={() => this.setState({activeTab: 'sync'})}>
             <Text
               style={[
@@ -336,6 +342,7 @@ export default class App extends Component {
 
           <TouchableOpacity
             style={styles.tab}
+            testID="async button"
             onPress={() => this.setState({activeTab: 'async'})}>
             <Text
               style={[
@@ -348,6 +355,7 @@ export default class App extends Component {
 
           <TouchableOpacity
             style={styles.tab}
+            testID="hooks button"
             onPress={() => this.setState({activeTab: 'hooks'})}>
             <Text
               style={[

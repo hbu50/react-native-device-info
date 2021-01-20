@@ -8,6 +8,10 @@ const [arrayFnAsync, arrayFnSync] = makeFns([]);
 const [booleanFnAsync, booleanFnSync] = makeFns(false);
 const [objectFnAsync, objectFnSync] = makeFns({});
 
+const numberAsyncHookResultHook = () => jest.fn(() => ({ loading: false, result: -1 }));
+const booleanAsyncHookResultHook = () => jest.fn(() => ({ loading: false, result: false }));
+const stringAsyncHookResultHook = () => jest.fn(() => ({ loading: false, result: 'unknown' }));
+
 const diMock = {
   getAndroidId: stringFnAsync(),
   getAndroidIdSync: stringFnSync(),
@@ -92,6 +96,10 @@ const diMock = {
   getUserAgentSync: stringFnSync(),
   hasSystemFeature: booleanFnAsync(),
   hasSystemFeatureSync: booleanFnSync(),
+  hasGms: booleanFnAsync(),
+  hasGmsSync: booleanFnSync(),
+  hasHms: booleanFnAsync(),
+  hasHmsSync: booleanFnSync(),
   isAirplaneMode: booleanFnAsync(),
   isAirplaneModeSync: booleanFnSync(),
   isBatteryCharging: booleanFnAsync(),
@@ -133,7 +141,15 @@ const diMock = {
   supported64BitAbisSync: arrayFnSync(),
   supportedAbis: arrayFnAsync(),
   supportedAbisSync: arrayFnSync(),
-  // TO DO: add hook mocks ?
+  useBatteryLevel: numberFnSync(),
+  useBatteryLevelIsLow: numberFnSync(),
+  usePowerState: objectFnSync(),
+  useIsHeadphonesConnected: booleanAsyncHookResultHook(),
+  useFirstInstallTime: numberAsyncHookResultHook(),
+  useDeviceName: stringAsyncHookResultHook(),
+  useHasSystemFeature: booleanAsyncHookResultHook(),
+  useIsEmulator: booleanAsyncHookResultHook(),
+  useManufacturer: stringAsyncHookResultHook(),
 };
 
 module.exports = diMock;

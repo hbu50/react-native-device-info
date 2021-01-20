@@ -101,6 +101,9 @@ rnpm link react-native-device-info
 _For iOS users using Pods_
 You still need to run `pod install` after running the above link command inside your `IOS` folder.
 
+_For Windows users_
+Automatic linking is supported on React native >= 0.63. Previous versions need to do manual linking.
+
 ### Manual
 
 <details>
@@ -271,25 +274,31 @@ allprojects {
 <details>
     <summary>Windows</summary>
 
-- Open the solution in Visual Studio for your Windows apps
-- right click your in the Explorer and click Add > Existing Project...
-- Navigate to `./<app-name>/node_modules/react-native-device-info/windows/RNDeviceInfo` and add `RNDeviceInfo.csproj`
-- this time right click on your React Native Windows app under your solutions directory and click Add > Reference...
-- check the `RNDeviceInfo` you just added and press ok
-- open up `MainReactNativeHost.cs` for your app and edit the file like so:
+You can either use autolinking on react-native-windows 0.63 and later or manually link the module on earlier realeases.
+
+#### Manual installation on RNW >= 0.62
+- `npm install react-native-device-info --save`
+- Open your solution in Visual Studio 2019 (eg. `windows\yourapp.sln`)
+- Right-click Solution icon in Solution Explorer > Add > Existing Project...
+- Add `node_modules\react-native-device-info\windows\RNDeviceInfoCPP\RNDeviceInfoCPP.vcxproj`
+- Right-click main application project > Add > Reference...
+- Select `RNDeviceInfoCPP` in Solution Projects
+- In app `pch.h` add `#include "winrt/RNDeviceInfoCPP.h"`
+- In `App.cpp` add `PackageProviders().Append(winrt::RNDeviceInfoCPP::ReactPackageProvider());` before `InitializeComponent();`:
 
 ```diff
-+ using RNDeviceInfo;
-......
-        protected override List<IReactPackage> Packages => new List<IReactPackage>
-        {
-            new MainReactPackage(),
-+           new RNDeviceInfoPackage(),
-        };
+App::App() noexcept
+{
+...
+    PackageProviders().Append(make<ReactPackageProvider>()); // Includes all modules in this project
++   PackageProviders().Append(winrt::RNDeviceInfoCPP::ReactPackageProvider());
+
+    InitializeComponent();
+}
 ```
 
-(Thanks to @josephan for writing the instructions)
-
+### Manual installation on RNW 0.61
+Do the same steps as for 0.62, but use `node_modules\RNDeviceInfoCPP\windows\RNDeviceInfoCPP61\RNDeviceInfoCPP.vcxproj` in step 4.
 </details>
 
 ## Usage
@@ -314,8 +323,8 @@ Most APIs return a Promise but also have a corresponding API with `Sync` on the 
 | [getApiLevel()](#getapilevel)                                     | `Promise<number>`   |  ❌  |   ✅    |   ❌    | ❌ |
 | [getApplicationName()](#getapplicationname)                       | `string`            |  ✅  |   ✅    |   ✅    | ❌ |
 | [getAvailableLocationProviders()](#getAvailableLocationProviders) | `Promise<Object>`   |  ✅  |   ✅    |   ❌    | ❌ |
-| [getBaseOs()](#getbaseOs)                                         | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ✅ |
-| [getBuildId()](#getbuildid)                                       | `Promise<string>`   |  ✅  |   ✅    |   ❌    | ❌ |
+| [getBaseOs()](#getbaseOs)                                         | `Promise<string>`   |  ❌  |   ✅    |   ✅    | ✅ |
+| [getBuildId()](#getbuildid)                                       | `Promise<string>`   |  ✅  |   ✅    |   ✅    | ❌ |
 | [getBatteryLevel()](#getbatterylevel)                             | `Promise<number>`   |  ✅  |   ✅    |   ✅    | ✅ |
 | [getBootloader()](#getbootloader)                                 | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
 | [getBrand()](#getbrand)                                           | `string`            |  ✅  |   ✅    |   ✅    | ❌ |
@@ -332,15 +341,15 @@ Most APIs return a Promise but also have a corresponding API with `Sync` on the 
 | [getDeviceToken()](#getdevicetoken)                               | `Promise<string>`   |  ✅  |   ❌    |   ❌    | ❌ |
 | [getFirstInstallTime()](#getfirstinstalltime)                     | `Promise<number>`   |  ❌  |   ✅    |   ✅    | ❌ |
 | [getFingerprint()](#getfingerprint)                               | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
-| [getFontScale()](#getfontscale)                                   | `Promise<number>`   |  ✅  |   ✅    |   ❌    | ❌ |
-| [getFreeDiskStorage()](#getfreediskstorage)                       | `Promise<number>`   |  ✅  |   ✅    |   ❌    | ✅ |
-| [getFreeDiskStorageOld()](#getfreediskstorageold)                 | `Promise<number>`   |  ✅  |   ✅    |   ❌    | ✅ |
+| [getFontScale()](#getfontscale)                                   | `Promise<number>`   |  ✅  |   ✅    |   ✅    | ❌ |
+| [getFreeDiskStorage()](#getfreediskstorage)                       | `Promise<number>`   |  ✅  |   ✅    |   ✅    | ✅ |
+| [getFreeDiskStorageOld()](#getfreediskstorageold)                 | `Promise<number>`   |  ✅  |   ✅    |   ✅    | ✅ |
 | [getHardware()](#gethardware)                                     | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
 | [getHost()](#gethost)                                             | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
 | [getIpAddress()](#getipaddress)                                   | `Promise<string>`   |  ✅  |   ✅    |   ✅    | ❌ |
 | [getIncremental()](#getincremental)                               | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
-| [getInstallerPackageName()](#getinstallerpackagename)             | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
-| [getInstallReferrer()](#getinstallreferrer)                       | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ✅ |
+| [getInstallerPackageName()](#getinstallerpackagename)             | `Promise<string>`   |  ❌  |   ✅    |   ✅    | ❌ |
+| [getInstallReferrer()](#getinstallreferrer)                       | `Promise<string>`   |  ❌  |   ✅    |   ✅    | ✅ |
 | [getInstanceId()](#getinstanceid)                                 | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
 | [getLastUpdateTime()](#getlastupdatetime)                         | `Promise<number>`   |  ❌  |   ✅    |   ❌    | ❌ |
 | [getMacAddress()](#getmacaddress)                                 | `Promise<string>`   |  ✅  |   ✅    |   ❌    | ❌ |
@@ -348,7 +357,7 @@ Most APIs return a Promise but also have a corresponding API with `Sync` on the 
 | [getMaxMemory()](#getmaxmemory)                                   | `Promise<number>`   |  ❌  |   ✅    |   ✅    | ✅ |
 | [getModel()](#getmodel)                                           | `string`            |  ✅  |   ✅    |   ✅    | ❌ |
 | [getPhoneNumber()](#getphonenumber)                               | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
-| [getPowerState()](#getpowerstate)                                 | `Promise<object>`   |  ✅  |   ✅    |   ❌    | ✅ |
+| [getPowerState()](#getpowerstate)                                 | `Promise<object>`   |  ✅  |   ✅    |   ✅    | ✅ |
 | [getProduct()](#getproduct)                                       | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
 | [getPreviewSdkInt()](#getPreviewSdkInt)                           | `Promise<number>`   |  ❌  |   ✅    |   ❌    | ❌ |
 | [getReadableVersion()](#getreadableversion)                       | `string`            |  ✅  |   ✅    |   ✅    | ❌ |
@@ -359,13 +368,15 @@ Most APIs return a Promise but also have a corresponding API with `Sync` on the 
 | [getSystemVersion()](#getsystemversion)                           | `string`            |  ✅  |   ✅    |   ✅    | ❌ |
 | [getTags()](#gettags)                                             | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
 | [getType()](#gettype)                                             | `Promise<string>`   |  ❌  |   ✅    |   ❌    | ❌ |
-| [getTotalDiskCapacity()](#gettotaldiskcapacity)                   | `Promise<number>`   |  ✅  |   ✅    |   ❌    | ✅ |
-| [getTotalDiskCapacityOld()](#gettotaldiskcapacityold)             | `Promise<number>`   |  ✅  |   ✅    |   ❌    | ✅ |
+| [getTotalDiskCapacity()](#gettotaldiskcapacity)                   | `Promise<number>`   |  ✅  |   ✅    |   ✅    | ✅ |
+| [getTotalDiskCapacityOld()](#gettotaldiskcapacityold)             | `Promise<number>`   |  ✅  |   ✅    |   ✅    | ✅ |
 | [getTotalMemory()](#gettotalmemory)                               | `Promise<number>`   |  ✅  |   ✅    |   ❌    | ✅ |
 | [getUniqueId()](#getuniqueid)                                     | `string`            |  ✅  |   ✅    |   ✅    | ❌ |
-| [getUsedMemory()](#getusedmemory)                                 | `Promise<number>`   |  ✅  |   ✅    |   ❌    | ✅ |
+| [getUsedMemory()](#getusedmemory)                                 | `Promise<number>`   |  ✅  |   ✅    |   ✅    | ✅ |
 | [getUserAgent()](#getuseragent)                                   | `Promise<string>`   |  ✅  |   ✅    |   ❌    | ✅ |
 | [getVersion()](#getversion)                                       | `string`            |  ✅  |   ✅    |   ✅    | ❌ |
+| [hasGms()](#hasGms)                                               | `boolean`           |  ❌  |   ✅    |   ❌    | ❌ |
+| [hasHms()](#hasHms)                                               | `boolean`           |  ❌  |   ✅    |   ❌    | ❌ |
 | [hasNotch()](#hasNotch)                                           | `boolean`           |  ✅  |   ✅    |   ✅    | ❌ |
 | [hasSystemFeature()](#hassystemfeaturefeature)                    | `Promise<boolean>`  |  ❌  |   ✅    |   ❌    | ❌ |
 | [isAirplaneMode()](#isairplanemode)                               | `Promise<boolean>`  |  ❌  |   ✅    |   ❌    | ✅ |
@@ -1378,6 +1389,32 @@ Tells if the device is currently in landscape mode.
 DeviceInfo.isLandscape().then(isLandscape => {
   // true
 });
+```
+
+---
+
+### hasGms()
+
+Tells if the device supports Google Mobile Services.
+
+#### Examples
+
+```js
+let hasGms = DeviceInfo.hasGms();
+  // true
+```
+
+---
+
+### hasHms()
+
+Tells if the device supports Huawei Mobile Services.
+
+#### Examples
+
+```js
+let hasHms = DeviceInfo.hasHms();
+  // true
 ```
 
 ---
